@@ -2,6 +2,4 @@
 datasets/raw/
 datasets/dataset_*
 datasets/susp*
-test_*
-train_*
 classifier.bin
