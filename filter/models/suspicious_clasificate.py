@@ -44,11 +44,19 @@ def train_and_save():
     model = fasttext.train_supervised(
         input="train_fast_text_suspicion.txt",
         lr=0.1,
-        epoch=20,
-        wordNgrams=3,
+        epoch=10,
+        wordNgrams=2,
         dim=100,
         loss="softmax"
     )
+
+    model.save_model("classifier.bin")
+
+
+def auto_train_and_save():
+    model = fasttext.train_supervised(input='train_fast_text_suspicion.txt', autotuneValidationFile='test_fast_text_suspicion.txt',
+                                      # поиск в течение 30 минут autotuneModelSize='50M' )
+                                      autotuneDuration=1800//30, autotuneModelSize='50M')
 
     model.save_model("classifier.bin")
 
@@ -83,7 +91,7 @@ def classify(model, text: str, threshold: float = 0.1) -> dict:
 
     suspicion_probability = float(
         probs.get("__label__suspicion", 0.0)
-    ) + (1 - float(probs.get("__label__suspicion", 0.0)))
+    )
 
     is_suspicious = suspicion_probability >= threshold
 
@@ -102,7 +110,7 @@ if __name__ == "__main__":
     texts = ["Я заложил бомбу под вашим домом", "Я взорву бомбу",
              "Привет", "Я заложил бомбу зданием"]
 
-    train_and_save()
+    auto_train_and_save()
     model = load_model("classifier.bin")
     test_model(model)
 

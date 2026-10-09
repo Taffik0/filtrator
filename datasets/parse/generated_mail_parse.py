@@ -1,7 +1,7 @@
 import json
 import re
 
-with open("./datasets/raw/терроризм_my.txt", "r", encoding="utf-8") as f:
+with open("./datasets/raw/genered_normal.txt", "r", encoding="utf-8") as f:
     text = f.read()
 
 pattern = re.compile(
@@ -19,5 +19,7 @@ data: list[dict[str, str]] = [
     for subject, body in pattern.findall(text)
 ]
 
-with open("suspicion_terrorism_my.json", "w", encoding="utf-8") as f:
+print(len(data))
+
+with open("dataset_generated_normal.json", "w", encoding="utf-8") as f:
     json.dump(data, f, ensure_ascii=False, indent=2)

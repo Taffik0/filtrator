@@ -5,8 +5,8 @@ import re
 
 def generate_training_file(normal: list[dict[str, str]], suspicion_danger: list[dict[str, str]], suspicion_terrorism: list[dict[str, str]]):
     mails = [{**n, "type": "normal"} for n in normal] + \
-        [{**s, "type": "suspicion"} for s in suspicion_danger] * 4 + \
-        [{**s, "type": "suspicion"} for s in suspicion_terrorism] * 10
+        [{**s, "type": "suspicion"} for s in suspicion_danger] + \
+        [{**s, "type": "suspicion"} for s in suspicion_terrorism]
     random.shuffle(mails)
     with open("train_fast_text_suspicion.txt", "w", encoding="utf-8") as f:
         for mail in mails:
@@ -20,8 +20,8 @@ def generate_training_file(normal: list[dict[str, str]], suspicion_danger: list[
 
 def generate_test_file(normal: list[dict[str, str]], suspicion_danger: list[dict[str, str]], suspicion_terrorism: list[dict[str, str]]):
     mails = [{**n, "type": "normal"} for n in normal] + \
-        [{**s, "type": "suspicion"} for s in suspicion_danger] * 3 + \
-        [{**s, "type": "suspicion"} for s in suspicion_terrorism] * 3
+        [{**s, "type": "suspicion"} for s in suspicion_danger] + \
+        [{**s, "type": "suspicion"} for s in suspicion_terrorism]
     random.shuffle(mails)
     with open("test_fast_text_suspicion.txt", "w", encoding="utf-8") as f:
         for mail in mails:
@@ -38,6 +38,8 @@ if __name__ == "__main__":
     normal_train_ru: list[dict[str, str]] = []
     normal_test: list[dict[str, str]] = []
     normal_test_ru: list[dict[str, str]] = []
+    normal_generated_train: list[dict[str, str]] = []
+    normal_generated_test: list[dict[str, str]] = []
 
     suspicion_danger_train: list[dict[str, str]] = []
     suspicion_danger_test: list[dict[str, str]] = []
@@ -50,12 +52,23 @@ if __name__ == "__main__":
     with open("./datasets/dataset_normal_train_ru.json", "r", encoding="utf-8") as f:
         normal_train_ru = json.load(f)
     normal_train += [{**n, "body": n["body_ru"]} for n in normal_train_ru]
+    normal_train = normal_train[:50]
 
     with open("./datasets/dataset_normal_test_en.json", "r", encoding="utf-8") as f:
         normal_test = json.load(f)
     with open("./datasets/dataset_normal_test_ru.json", "r", encoding="utf-8") as f:
         normal_test_ru = json.load(f)
     normal_test += [{**n, "body": n["body_ru"]} for n in normal_test_ru]
+    normal_test = normal_test[:50]
+
+    normal_generated: list[dict[str, str]] = []
+    with open("./datasets/dataset_generated_normal.json", "r", encoding="utf-8") as f:
+        normal_generated = json.load(f)
+
+    normal_generated_test = normal_generated[0:20]
+    normal_generated_train = normal_generated[20:]
+    normal_test += normal_generated_test
+    normal_train += normal_generated_train
 
     suspicion_danger: list[dict[str, str]] = []
     with open("./datasets/suspiction_danger.json", "r", encoding="utf-8") as f:
